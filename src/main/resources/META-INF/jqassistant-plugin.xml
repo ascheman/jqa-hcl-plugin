@@ -1,0 +1,22 @@
+<jqassistant-plugin xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                    xmlns="http://schema.jqassistant.org/plugin/v1.10"
+                    xsi:schemaLocation="http://schema.jqassistant.org/plugin/v1.10 https://schema.jqassistant.org/plugin/jqassistant-plugin-v1.10.xsd"
+                    name="jQA HCL Plugin">
+    <description>Provides a scanner for HCL (Hashicorp Configuration Language) files.</description>
+    <model>
+        <class>net.aschemann.jqassistant.plugin.hcl.api.model.HclAttributeDescriptor</class>
+        <class>net.aschemann.jqassistant.plugin.hcl.api.model.HclBlockDescriptor</class>
+        <class>net.aschemann.jqassistant.plugin.hcl.api.model.HclConfigurationDescriptor</class>
+        <class>net.aschemann.jqassistant.plugin.hcl.api.model.HclConfiguredDescriptor</class>
+        <class>net.aschemann.jqassistant.plugin.hcl.api.model.HclDescriptor</class>
+        <class>net.aschemann.jqassistant.plugin.hcl.api.model.HclIdentifiedDescriptor</class>
+        <class>net.aschemann.jqassistant.plugin.hcl.api.model.HclNameDescriptor</class>
+        <class>net.aschemann.jqassistant.plugin.hcl.api.model.HclVariableDescriptor</class>
+    </model>
+    <scanner>
+        <class>net.aschemann.jqassistant.plugin.hcl.impl.scanner.HclScannerPlugin</class>
+    </scanner>
+    <rules>
+        <resource>terraform-rules.adoc</resource>
+    </rules>
+</jqassistant-plugin>

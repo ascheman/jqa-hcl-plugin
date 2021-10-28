@@ -1,0 +1,21 @@
+@startuml
+
+package data {
+  package aws_vpc {
+    package this {
+      object id
+    }
+  }
+  package aws_subnet_ids {
+    map that {
+      vpc_id *-> data.aws_vpc.this.id
+       '*-> foo
+      'aws_vpc.this.id
+    }
+  }
+}
+'data::aws_subnet_ids::vpc_id --> data::aws_vpc::this::id : refer
+'vpc_id  : refer
+
+
+@enduml

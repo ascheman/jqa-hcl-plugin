@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>net.aschemann.demo</groupId>
+    <artifactId>tst</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <name>tst</name>
+
+    <properties>
+        <jqa.version>1.11.0-SNAPSHOT</jqa.version>
+        <jqa-ansible-plugin.version>1.0.0-SNAPSHOT</jqa-ansible-plugin.version>
+        <jqa-groovy-plugin.version>1.0.0-SNAPSHOT</jqa-groovy-plugin.version>
+        <jqa-hcl-plugin.version>1.0.0-SNAPSHOT</jqa-hcl-plugin.version>
+    </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>com.buschmais.jqassistant</groupId>
+                <artifactId>jqassistant-maven-plugin</artifactId>
+                <version>${jqa.version}</version>
+                <executions>
+                    <execution>
+                        <id>cli-default</id>
+                        <goals>
+                            <goal>scan</goal>
+                            <goal>analyze</goal>
+                        </goals>
+                    </execution>
+                </executions>
+
+                <configuration>
+                    <!-- Scan -->
+                    <scanIncludes>
+                        <scanInclude>
+                            <path>.</path>
+                        </scanInclude>
+                    </scanIncludes>
+                    <scanProperties>
+                        <yaml.file.include>
+                            *.yaml,*.yml,/inventories/*,/playbooks/*,/provisioners/*
+                        </yaml.file.include>
+                        <yaml.file.exclude>
+                            *.j2,*.py,*/inventory
+                        </yaml.file.exclude>
+                    </scanProperties>
+                    <concepts>
+                        <concept>terraform:Hcl2Terraform</concept>
+                    </concepts>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.neo4j.client</groupId>
+                        <artifactId>neo4j-browser</artifactId>
+                        <version>4.3.5</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>com.buschmais.jqassistant.plugin</groupId>
+                        <artifactId>yaml2</artifactId>
+                        <version>${jqa.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>net.aschemann.jqassistant.plugins</groupId>
+                        <artifactId>jqa-ansible-plugin</artifactId>
+                        <version>${jqa-ansible-plugin.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>net.aschemann.jqassistant.plugins</groupId>
+                        <artifactId>jqa-groovy-plugin</artifactId>
+                        <version>${jqa-groovy-plugin.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>net.aschemann.jqassistant.plugins</groupId>
+                        <artifactId>jqa-hcl-plugin</artifactId>
+                        <version>${jqa-hcl-plugin.version}</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+        </plugins>
+    </build>
+</project>

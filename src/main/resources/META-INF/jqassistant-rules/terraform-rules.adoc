@@ -1,0 +1,60 @@
+[[terraform:Hcl2Terraform]]
+.Tag all objects defined in .tf or .tfvars files als Terraform
+[source,cypher,role=concept]
+----
+MATCH
+  (file:HCL:File) -[*]-> (h:HCL)
+WHERE
+  file.fileName =~ '.+\\.tf(|vars)$'
+SET
+  file:Terraform,
+  h:Terraform
+RETURN file
+
+UNION
+MATCH (file:HCL:File) -[*]-> (t:Terraform)
+WHERE t.identifier = 'data'
+SET t:Data
+RETURN file
+
+UNION
+MATCH (file:HCL:File) -[*]-> (t:Terraform)
+WHERE t.identifier = 'locals'
+SET t:Local
+RETURN file
+
+UNION
+MATCH (file:HCL:File) -[*]-> (t:Terraform)
+WHERE t.identifier = 'output'
+SET t:Output
+RETURN file
+
+UNION
+MATCH (file:HCL:File) -[*]-> (t:Terraform)
+WHERE t.identifier = 'resource'
+SET t:Resource
+RETURN file
+
+UNION
+MATCH (file:HCL:File) -[*]-> (t:Terraform)
+WHERE t.identifier = 'variable'
+SET t:Variable
+RETURN file
+----
+
+//[[my-rules:MyConstraint]]
+//.A human readable description of the constraint.
+//[source,cypher,role=constraint,requiresConcepts="my-rules:MyConcept",severity=blocker]
+//----
+////MATCH
+//// ...
+////WHERE
+//// ...
+////RETURN
+//// ...
+//----
+
+[[terraform:TerraformDefaultGroup]]
+.Include all concepts to extend HCL objects to Terraform if necessary
+[role=group,includeConcepts="terraform:*"]
+== Terraform Default Group

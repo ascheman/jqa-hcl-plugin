@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>net.aschemann.jqassistant.plugins</groupId>
+    <artifactId>jqa-hcl-plugin</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+
+    <name>jQAssistant HCL Plugin</name>
+    <description>HCL (HashiCorp Configuration Language) scanner for jQAssistant</description>
+    <url>https://aschemann.net/</url>
+    <inceptionYear>2021</inceptionYear>
+
+    <organization>
+        <name>Gerd Aschemann (Freelancer)</name>
+        <url>https://aschemann.net/</url>
+    </organization>
+
+    <licenses>
+        <license>
+            <name>GNU General Public License, v3</name>
+            <url>https://www.gnu.org/licenses/gpl-3.0.html</url>
+        </license>
+    </licenses>
+
+    <scm>
+        <url>https://gitlab.com/ascheman/jqa-hcl-plugin.git</url>
+    </scm>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
+
+        <oss.sonatype.org.url>https://oss.sonatype.org</oss.sonatype.org.url>
+
+        <assertj-core.version>3.21.0</assertj-core.version>
+        <hcl4j.version>0.4.1-SNAPSHOT</hcl4j.version>
+        <jqa.version>1.10.1</jqa.version>
+        <junit-jupiter-engine.version>5.8.1</junit-jupiter-engine.version>
+        <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
+        <maven-surefire-plugin.version>3.0.0-M5</maven-surefire-plugin.version>
+        <slf4j.version>1.7.30</slf4j.version>
+        <slf4j-simple.version>1.7.29</slf4j-simple.version>
+    </properties>
+
+    <repositories>
+        <repository>
+            <id>ossrh</id>
+            <url>${oss.sonatype.org.url}/content/repositories/snapshots/</url>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+            </snapshots>
+        </repository>
+    </repositories>
+
+    <distributionManagement>
+        <repository>
+            <id>oss.sonatype.org</id>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+        <snapshotRepository>
+            <id>ossrh</id>
+            <url>${oss.sonatype.org.url}/content/repositories/snapshots/</url>
+            <layout>default</layout>
+        </snapshotRepository>
+    </distributionManagement>
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven-compiler-plugin.version}</version>
+                <configuration>
+                    <compilerArgs>
+                        <arg>-Xlint:unchecked</arg>
+                    </compilerArgs>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>${maven-surefire-plugin.version}</version>
+            </plugin>
+        </plugins>
+    </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.bertramlabs.plugins</groupId>
+            <artifactId>hcl4j</artifactId>
+            <version>${hcl4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.buschmais.jqassistant.core</groupId>
+            <artifactId>scanner</artifactId>
+            <version>${jqa.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.buschmais.jqassistant.plugin</groupId>
+            <artifactId>common</artifactId>
+            <version>${jqa.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.buschmais.jqassistant.core</groupId>
+            <artifactId>store</artifactId>
+            <version>${jqa.version}</version>
+        </dependency>
+        <!-- Test dependencies -->
+        <dependency>
+            <groupId>com.buschmais.jqassistant.core</groupId>
+            <artifactId>plugin</artifactId>
+            <version>${jqa.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.buschmais.jqassistant.neo4jserver</groupId>
+            <artifactId>neo4jv3</artifactId>
+            <version>${jqa.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.buschmais.jqassistant.plugin</groupId>
+            <artifactId>common</artifactId>
+            <type>test-jar</type>
+            <version>${jqa.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>${junit-jupiter-engine.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <version>${assertj-core.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>${slf4j-simple.version}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <profiles>
+        <profile>
+            <id>github</id>
+            <activation>
+                <property>
+                    <name>env.GITHUB_TOKEN</name>
+                </property>
+            </activation>
+            <distributionManagement>
+                <snapshotRepository>
+                    <id>github</id>
+                    <name>GitHub Packages</name>
+                    <!--suppress UnresolvedMavenProperty -->
+                    <url>https://maven.pkg.github.com/${env.GITHUB_ACTOR}/${project.artifactId}</url>
+                </snapshotRepository>
+            </distributionManagement>
+        </profile>
+    </profiles>
+</project>

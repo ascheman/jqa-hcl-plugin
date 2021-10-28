@@ -1,0 +1,27 @@
+name: Build Maven Project
+
+on:
+  push:
+    branches: [ main, develop, feature/**, fix/** ]
+  pull_request:
+    branches: [ main, develop ]
+  workflow_dispatch: {}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up JDK 8
+        uses: actions/setup-java@v2
+        with:
+          java-version: 8
+          distribution: 'adopt'
+          server-id: github # Value of the distributionManagement/repository/id field of the pom.xml
+          settings-path: ${{ github.workspace }} # location for the settings.xml file
+      - name: Build and deploy with Maven Wrapper
+        # TODO make sure we distinguish versions by branches for deployment
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: ./mvnw -s $GITHUB_WORKSPACE/settings.xml -B clean deploy
