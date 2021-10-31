@@ -27,6 +27,6 @@ MATCH (aws_lbs:HCL {name:'aws_lb'})
 WITH eip
 MATCH (file:HCL:File) -[*]-> (eip) -[:HAS_ATTRIBUTE]-> (network_interface:HCL {identifier: 'network_interface'})
 WHERE NOT (file:Configuration)
-RETURN file, eip
+RETURN DISTINCT file, eip
 ----
 

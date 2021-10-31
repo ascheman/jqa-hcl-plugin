@@ -8,7 +8,12 @@ locals {
   default_subnet_id = tolist(data.aws_subnet_ids.this.ids)[0]
 }
 
+resource "aws_network_interface" "this" {
+  subnet_id = local.default_subnet_id
+}
+
 resource "aws_eip" "this" {
+  network_interface = aws_network_interface.this.id
 }
 
 resource "aws_lb" "this" {
