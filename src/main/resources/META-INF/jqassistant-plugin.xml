@@ -8,11 +8,15 @@
         <class>net.aschemann.jqassistant.plugin.hcl.api.model.HclBlockDescriptor</class>
         <class>net.aschemann.jqassistant.plugin.hcl.api.model.HclConfigurationDescriptor</class>
         <class>net.aschemann.jqassistant.plugin.hcl.api.model.HclConfiguredDescriptor</class>
+        <class>net.aschemann.jqassistant.plugin.hcl.api.model.HclFileDescriptor</class>
         <class>net.aschemann.jqassistant.plugin.hcl.api.model.HclDescriptor</class>
         <class>net.aschemann.jqassistant.plugin.hcl.api.model.HclIdentifiedDescriptor</class>
         <class>net.aschemann.jqassistant.plugin.hcl.api.model.HclNameDescriptor</class>
         <class>net.aschemann.jqassistant.plugin.hcl.api.model.HclVariableDescriptor</class>
     </model>
+    <scope>
+        <class>net.aschemann.jqassistant.plugin.hcl.api.HclScope</class>
+    </scope>
     <scanner>
         <class>net.aschemann.jqassistant.plugin.hcl.impl.scanner.HclScannerPlugin</class>
     </scanner>

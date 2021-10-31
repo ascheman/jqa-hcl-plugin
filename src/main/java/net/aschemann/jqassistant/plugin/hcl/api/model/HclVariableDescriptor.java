@@ -6,7 +6,6 @@ import com.buschmais.xo.neo4j.api.annotation.Relation;
 
 @Label("Variable")
 public interface HclVariableDescriptor extends HclIdentifiedDescriptor {
-    @Property("HAS_VALUE")
     String getValue();
     void setValue(final String value);
 

@@ -39,6 +39,7 @@
                     <scanIncludes>
                         <scanInclude>
                             <path>.</path>
+                            <scope>hcl:hcl</scope>
                         </scanInclude>
                     </scanIncludes>
                     <scanProperties>
@@ -52,6 +53,9 @@
                     <concepts>
                         <concept>terraform:Hcl2Terraform</concept>
                     </concepts>
+                    <groups>
+                        <group>default</group>
+                    </groups>
                 </configuration>
                 <dependencies>
                     <dependency>

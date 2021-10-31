@@ -11,12 +11,8 @@ import java.util.Map;
 
 @Label("Block")
 public interface HclBlockDescriptor extends HclIdentifiedDescriptor {
-    @Property("HAS TYPE")
-    String getType();
-    void setType(final String type);
-
-    @Relation("HAS_NAME")
-    List<HclNameDescriptor> getNames();
+    String getName();
+    void setName(final String name);
 
     @Relation("HAS_ATTRIBUTE")
     List<HclAttributeDescriptor> getAttributes();
