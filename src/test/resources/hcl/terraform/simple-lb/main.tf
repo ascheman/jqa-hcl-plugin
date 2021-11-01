@@ -1,13 +1,3 @@
-data "aws_vpc" "this" {}
-
-data "aws_subnet_ids" "this" {
-  vpc_id = data.aws_vpc.this.id
-}
-
-locals {
-  default_subnet_id = tolist(data.aws_subnet_ids.this.ids)[0]
-}
-
 resource "aws_network_interface" "this" {
   subnet_id = local.default_subnet_id
 }
