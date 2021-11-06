@@ -19,7 +19,7 @@ public class HclScannerPluginTest extends AbstractPluginIT {
     public static final String SIMPLE_HCL_TEST = "/hcl/simple";
     public static final String SIMPLE_TF_LB_CONFIGURATION = "/hcl/terraform/simple-lb";
 
-//    @BeforeEach
+    //    @BeforeEach
 //    public void resetScanner() {
 //        HclScannerPlugin.resetObjectStore();
 //    }

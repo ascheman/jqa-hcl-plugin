@@ -22,7 +22,7 @@ block "oneliner" {}
 
 # Block with two names given by string literals
 service "dummy" "this" {
-  port = 8080
+  port     = 8080
   networks = ["nw1", "nw2"]
 }
 

@@ -12,6 +12,7 @@ import java.util.Map;
 @Label("Block")
 public interface HclBlockDescriptor extends HclIdentifiedDescriptor {
     String getName();
+
     void setName(final String name);
 
     @Relation("HAS_ATTRIBUTE")

@@ -10,7 +10,6 @@ include::jQA:Summary[]
 [role=group,includesConstraints="my-rules:*"]
 == Default Rules
 
-
 == Project Specific Concepts & Constraints
 
 [[my-rules:LBs-must-use-free-EIPs-only]]
