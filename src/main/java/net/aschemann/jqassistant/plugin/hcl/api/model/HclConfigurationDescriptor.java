@@ -11,9 +11,6 @@ import java.util.List;
 
 @Label("Configuration")
 public interface HclConfigurationDescriptor extends HclFileDescriptor, DirectoryDescriptor {
-    String getName();
-    void setName(final String name);
-
     @Relation("CONTAINS_FILE")
     List<HclFileDescriptor> getFiles();
 }

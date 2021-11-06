@@ -26,11 +26,11 @@ import javax.validation.constraints.NotNull;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static net.aschemann.jqassistant.plugin.hcl.api.HclScope.HCL;
 
@@ -64,13 +64,15 @@ public class HclScannerPlugin extends AbstractDirectoryScannerPlugin<HclConfigur
         final String containerPath = container.getPath();
         LOGGER.debug("Entering Directory '{}'", containerPath);
         containerDescriptor.setName(containerPath);
+        // TODO For some reason `setConfigured()` does not work -> setLine(0) is a work around!
+        // containerDescriptor.setConfigured();
+        containerDescriptor.setLine(0);
         store = scannerContext.getStore();
         objects = new HclObjectStore(containerDescriptor, null, "ROOT");
 
         for (File file : container.listFiles(filterHclFiles())) {
             currentFilename = file.getName();
-            HclFileDescriptor hclFileDescriptor = scan(file);
-            containerDescriptor.getFiles().add(hclFileDescriptor);
+            add(containerDescriptor, file);
         }
 
     }
@@ -85,7 +87,7 @@ public class HclScannerPlugin extends AbstractDirectoryScannerPlugin<HclConfigur
                             || name.endsWith(".tfvars")
                             || name.endsWith(".hcl")
             );
-            LOGGER.debug("HCL: Checking '{}' ('{}') for acceptance: {}", name, file.getPath(), decision);
+            LOGGER.debug("Checking '{}' ('{}') for acceptance: {}", name, file.getPath(), decision);
             return decision;
         };
     }
@@ -96,46 +98,85 @@ public class HclScannerPlugin extends AbstractDirectoryScannerPlugin<HclConfigur
         LOGGER.debug("Leaving Directory '{}'", container.getPath());
     }
 
-    private HclFileDescriptor scan(final File item) throws IOException {
+    private void add(final HclConfigurationDescriptor containerDescriptor, final File item) throws IOException {
         try {
             HCLConfiguration hclConfiguration = hclParser.parseConfiguration(item);
-            return objects.add(hclConfiguration);
+            containerDescriptor.getFiles().add(objects.add(hclConfiguration));
         } catch (HCLParserException e) {
             LOGGER.error("Could not read HCL file '{}': {}", currentFilename, e, e);
         }
-        return null;
     }
 
     class HclObjectStore {
         final Map<String, HclObjectStore> contained = new HashMap<>();
         final HclObjectStore parent;
         final String name;
-        HclDescriptor delegate;
+        Optional<HclDescriptor> delegate = Optional.empty();
 
-        HclObjectStore(final HclDescriptor delegate, final HclObjectStore parent, final String name) {
-            this.delegate = delegate;
-            this.parent = parent;
-            this.name = name;
-            LOGGER.debug("Created: '{}'", fullyQualifiedName());
+        HclObjectStore(@NotNull final HclDescriptor delegate, final HclObjectStore parent, final String name) {
+            this(parent, name);
+            this.delegate = Optional.of(delegate);
         }
 
-        void add(String name, final HclObjectStore hclObjectStore) {
-            if (!contained.containsKey(name)) {
-                contained.put(name, hclObjectStore);
-            } else {
-                if (!(delegate instanceof HclBlockDescriptor)) {
+        HclObjectStore(final HclObjectStore parent, final String name) {
+            this.parent = parent;
+            this.name = name;
+            LOGGER.debug("'{}': created ({})", fullyQualifiedName(), hashCode());
+        }
+
+        void add(final String name, final HclObjectStore hclObjectStore) {
+            replaceDelegateIfUnconfigured(hclObjectStore);
+            if (contained.containsKey(name)) {
+                LOGGER.debug("'{} ({})': merge in '{} ({})'", hclObjectStore.fullyQualifiedName(), hashCode(), name,
+                        contained.get(name).hashCode());
+                if (delegate.isPresent() && !(delegate.get() instanceof HclBlockDescriptor)) {
                     throw new IllegalArgumentException(String.format("HCL element '%s' must not contain sub "
                                     + "elements (name: '%s', type: '%s')", name,
-                            hclObjectStore.delegate.getId(), hclObjectStore.delegate.getClass()));
+                            hclObjectStore.delegate.get().getId(), hclObjectStore.delegate.getClass()));
                 }
-                hclObjectStore.contained.forEach((n, o) -> {
-                    LOGGER.debug("{}: Merging in '{}'", fullyQualifiedName(), n);
-                    contained.get(name).add(n, o);
+                hclObjectStore.contained.forEach((final String key, final HclObjectStore value) -> {
+                    contained.get(name).add(key, value);
                 });
+            } else {
+                LOGGER.debug("'{} ({})': add in '{} ({})'", hclObjectStore.fullyQualifiedName(), hashCode(), name,
+                        hclObjectStore.hashCode());
+                contained.put(name, hclObjectStore);
+            }
+        }
+
+        private void replaceDelegateIfUnconfigured(HclObjectStore hclObjectStore) {
+            if (delegate.isPresent()) {
+                if (hclObjectStore.parent.delegate.isPresent()) {
+                    if (delegate == hclObjectStore.parent.delegate) {
+                        LOGGER.debug("'{}': delegate is equal to '{}'", fullyQualifiedName(),
+                                hclObjectStore.parent.fullyQualifiedName());
+                    } else {
+                        HclDescriptor me = delegate.get();
+                        if (me instanceof HclConfiguredDescriptor) {
+                            if (((HclConfiguredDescriptor) me).isConfigured()) {
+                                LOGGER.warn("'{}': not overriding existing delegate '{}' by '{}' from '{}'",
+                                        fullyQualifiedName(), delegate, hclObjectStore.parent.delegate,
+                                        hclObjectStore.parent.fullyQualifiedName());
+                            } else {
+                                LOGGER.debug("'{}': Replacing unconfigured delegate by '{}'", fullyQualifiedName(),
+                                        hclObjectStore.parent.delegate);
+                                delegate = hclObjectStore.parent.delegate;
+                            }
+                        }
+                    }
+                }
+            } else {
+                if (hclObjectStore.parent.delegate.isPresent()) {
+                    LOGGER.debug("'{}': merge in delegate (parent) from '{}'",
+                            hclObjectStore.parent.fullyQualifiedName(),
+                            hclObjectStore.fullyQualifiedName());
+                    delegate = hclObjectStore.parent.delegate;
+                }
             }
         }
 
         HclObjectStore find(String qualifiedName) {
+            LOGGER.debug("'{}': Searching for '{}'", fullyQualifiedName(), qualifiedName);
             List<String> qualifiedNameElems = Arrays.asList(qualifiedName.split(CONTEXT_DELIMITER_RE));
             return find(qualifiedNameElems);
         }
@@ -146,24 +187,21 @@ public class HclScannerPlugin extends AbstractDirectoryScannerPlugin<HclConfigur
             }
             final String currentQualifiedName = qualifiedNameElems.get(0);
             if (contained.containsKey(currentQualifiedName)) {
-                return contained.get(currentQualifiedName).find(qualifiedNameElems.subList(1,
-                        qualifiedNameElems.size()));
+                LOGGER.debug("'{}': Found existing ObjectStore '{}'", fullyQualifiedName(),
+                        contained.get(currentQualifiedName).hashCode());
             } else {
                 if (qualifiedNameElems.size() == 1) {
-                    if (delegate instanceof HclBlockDescriptor) {
-                        LOGGER.debug("'{}' adding implicit attribute '{}'", fullyQualifiedName(),
-                                currentQualifiedName);
-                        HclObjectStore result = this.add(
-                                new HCLAttribute(currentQualifiedName, -1, -1, -1));
-                        return result;
-                    } else {
-                        throw new RuntimeException(String.format("'%s' must not contain element '%s'",
-                                fullyQualifiedName(), currentQualifiedName));
-                    }
+                    LOGGER.debug("'{}': add implicit '{}' ({})", fullyQualifiedName(),
+                            currentQualifiedName, hashCode());
+                    HclObjectStore result = this.add(new HCLAttribute(currentQualifiedName, -1, -1, -1));
+                    return result;
                 }
+                LOGGER.debug("'{}': add fake '{}' ({})", fullyQualifiedName(), currentQualifiedName, hashCode());
+                HclObjectStore fake = new HclObjectStore(this, currentQualifiedName);
+                add(currentQualifiedName, fake);
             }
-            throw new RuntimeException(String.format("'%s' does not contain element '%s'", fullyQualifiedName(),
-                    currentQualifiedName));
+            return contained.get(currentQualifiedName).find(qualifiedNameElems.subList(1,
+                    qualifiedNameElems.size()));
         }
 
         private String fullyQualifiedName() {
@@ -178,29 +216,28 @@ public class HclScannerPlugin extends AbstractDirectoryScannerPlugin<HclConfigur
             result.setFileName(currentFilename);
             final HclObjectStore resultStore = new HclObjectStore(result, objects, currentFilename);
             add(currentFilename, resultStore);
-//            ((HclBlockDescriptor) this.delegate).getBlocks().add(result);
+            resultStore.addChildren(hclConfiguration);
+            return result;
+        }
 
+        private void addChildren(HCLConfiguration hclConfiguration) {
             for (HCLAttribute hclAttribute : hclConfiguration.getAttributes()) {
-                result.getAttributes().add((HclAttributeDescriptor) objects.add(hclAttribute).delegate);
+                add(hclAttribute);
             }
             for (HCLBlock hclBlock : hclConfiguration.getBlocks()) {
-                // TODO do this only for Terraform!
-                // TODO do this only on top level?
-                HclObjectStore hclBlockObjectStore = objects.add(hclBlock);
-                result.getBlocks().add((HclBlockDescriptor) hclBlockObjectStore.delegate);
+                HclObjectStore hclObjectStore = add(hclBlock);
                 if ("data".equals(hclBlock.getName())) {
-                    add("data", hclBlockObjectStore);
+                    objects.add("data", hclObjectStore);
                 } else if ("locals".equals(hclBlock.getName())) {
-                    add("local", hclBlockObjectStore);
+                    objects.add("local", hclObjectStore);
                 } else if ("variable".equals(hclBlock.getName())) {
-                    add("var", hclBlockObjectStore);
+                    objects.add("var", hclObjectStore);
                 } else {
-                    hclBlockObjectStore.contained.forEach((String name, HclObjectStore objectStore)-> {
-                        add(name, objectStore);
+                    hclObjectStore.contained.forEach((final String name, final HclObjectStore objectStore) -> {
+                        objects.add(name, objectStore);
                     });
                 }
             }
-            return result;
         }
 
         HclObjectStore add(final HCLBlock hclBlock) {
@@ -214,7 +251,7 @@ public class HclScannerPlugin extends AbstractDirectoryScannerPlugin<HclConfigur
             }
             HclBlockDescriptor result = store.create(HclBlockDescriptor.class);
             result.setName(name);
-            ((HclBlockDescriptor) this.delegate).getBlocks().add(result);
+            ((HclBlockDescriptor) this.delegate.get()).getBlocks().add(result);
             HclObjectStore resultStore = new HclObjectStore(result, this, name);
             add(name, resultStore);
             resultStore.add(blockNames.subList(1, blockNames.size()), hclBlock);
@@ -226,39 +263,53 @@ public class HclScannerPlugin extends AbstractDirectoryScannerPlugin<HclConfigur
             result.setName(name);
             final HclObjectStore resultStore = new HclObjectStore(result, this, name);
             add(name, resultStore);
-            ((HclBlockDescriptor) this.delegate).getBlocks().add(result);
+            ((HclBlockDescriptor) this.delegate.get()).getBlocks().add(result);
+            resultStore.addChildren(hclBlock);
+            return resultStore;
+        }
 
+        private void addChildren(HCLBlock hclBlock) {
             for (Symbol child : hclBlock.getChildren()) {
                 if (child instanceof HCLAttribute) {
-                    resultStore.add((HCLAttribute) child);
+                    add((HCLAttribute) child);
                 } else if (child instanceof HCLBlock) {
-                    resultStore.add((HCLBlock) child);
+                    add((HCLBlock) child);
                 } else {
                     LOGGER.warn("{}: Block '{}' has unknown child type '{}' in context '{}'",
                             currentFilename, hclBlock.getSymbolName(), child.getClass().getName(),
                             fullyQualifiedName());
                 }
             }
-            return resultStore;
         }
 
         private HclObjectStore add(final HCLAttribute hclAttribute) {
             final HclAttributeDescriptor result = create(hclAttribute, HclAttributeDescriptor.class);
             final HclObjectStore resultStore = new HclObjectStore(result, this, hclAttribute.getName());
             add(hclAttribute.getName(), resultStore);
-            ((HclBlockDescriptor) this.delegate).getAttributes().add(result);
+            if (this.delegate.isPresent()) {
+                ((HclBlockDescriptor) this.delegate.get()).getAttributes().add(result);
+            } else {
+                LOGGER.debug("'{}': No embracing block present", fullyQualifiedName());
+            }
 
             for (Symbol child : hclAttribute.getChildren()) {
                 if (child instanceof HCLValue) {
                     result.setValue((String) ((HCLValue) child).value);
                 } else if (child instanceof HCLAttribute || child instanceof Variable) {
-                    HclDescriptor hclDescriptor = objects.find(child.getName()).delegate;
-                    if (null != hclDescriptor) {
-                        result.setReference((HclAttributeDescriptor) hclDescriptor);
+                    String childName = child.getName();
+                    Optional<HclDescriptor> hclDescriptor = objects.find(childName).delegate;
+                    if (hclDescriptor.isPresent()) {
+                        HclAttributeDescriptor targetAttribute = (HclAttributeDescriptor) hclDescriptor.get();
+                        LOGGER.debug("'{} ({})': set reference for '{}' to '{}'", fullyQualifiedName(), hashCode(),
+                                childName, targetAttribute);
+                        result.setReference(targetAttribute);
+                    } else {
+                        LOGGER.error("No Reference Attribute present for '{}'", child.getName());
                     }
                 } else {
                     LOGGER.warn("{}: Attribute '{}' has unknown child type '{}' in context '{}'",
-                            currentFilename, hclAttribute.getName(), child.getClass().getName(), fullyQualifiedName());
+                            currentFilename, hclAttribute.getName(), child.getClass().getName(),
+                            fullyQualifiedName());
                 }
             }
             return resultStore;
@@ -269,6 +320,7 @@ public class HclScannerPlugin extends AbstractDirectoryScannerPlugin<HclConfigur
             configured.setLine(symbol.getLine());
             configured.setColumn(symbol.getColumn());
             configured.setPosition(symbol.getPosition());
+//            configured.setConfigured(true);
         }
 
         private <HclIdentifiedSub extends HclIdentifiedDescriptor> HclIdentifiedSub create(final Symbol symbol,
