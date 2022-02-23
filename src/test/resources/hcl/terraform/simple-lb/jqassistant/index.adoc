@@ -1,31 +1,14 @@
-= My Project
+= My AWSome Terraform Project
 
-This document describes architectural and design rules for My Project.
+Prove correctness of Terraform Infrastructure-as-Code (IaC) without even creating a single real resource.
 
 == Summary
 
 include::jQA:Summary[]
 
 [[default]]
-[role=group,includesConstraints="my-rules:*"]
+[role=group,includesConstraints="my-terraform-rules:*"]
 == Default Rules
 
-== Project Specific Concepts & Constraints
-
-[[my-rules:LBs-must-use-free-EIPs-only]]
-.A Load Balancer needs free Elastic IPs - they must not be bound to a Network Interface
-[source,cypher,role=constraint,severity=minor]
-----
-MATCH (aws_lbs:HCL {name:'aws_lb'})
-//        -[:HAS_BLOCK]->(aws_lb:HCL)
-//        -[:HAS_BLOCK]->(subnet_mapping {name: 'subnet_mapping'})
-        -[*]->()
-        -[:REFERS_TO]-> (id {identifier: 'id'})
-        <-[:HAS_ATTRIBUTE]- (eip:HCL)
-        <-[:HAS_BLOCK]- (aws_eips:HCL {name: 'aws_eip'})
-WITH eip
-MATCH (file:HCL:File) -[*]-> (eip) -[:HAS_ATTRIBUTE]-> (network_interface:HCL {identifier: 'network_interface'})
-WHERE NOT (file:Configuration)
-RETURN DISTINCT file, eip
-----
+include::my-terraform-rules.adoc[]
 

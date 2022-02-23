@@ -1,5 +1,5 @@
 resource "aws_network_interface" "this" {
-  subnet_id = var.default_subnet_id
+  subnet_id = local.default_subnet_id
 }
 
 resource "aws_eip" "this" {
@@ -11,7 +11,7 @@ resource "aws_lb" "this" {
   load_balancer_type = "network"
 
   subnet_mapping {
-    subnet_id     = var.default_subnet_id
+    subnet_id     = local.default_subnet_id
     allocation_id = aws_eip.this.id
   }
 }
