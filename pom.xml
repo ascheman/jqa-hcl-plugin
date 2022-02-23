@@ -6,7 +6,9 @@
 
     <groupId>net.aschemann.jqassistant.plugins</groupId>
     <artifactId>jqa-hcl-plugin</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <!-- tag::version[] -->
+    <version>0.1.0-SNAPSHOT</version>
+    <!-- end::version[] -->
 
     <name>jQAssistant HCL Plugin</name>
     <description>HCL (HashiCorp Configuration Language) scanner for jQAssistant</description>
@@ -35,11 +37,15 @@
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
 
+        <!-- tag::sonatype-url[] -->
         <oss.sonatype.org.url>https://oss.sonatype.org</oss.sonatype.org.url>
+        <!-- end::sonatype-url[] -->
 
         <assertj-core.version>3.21.0</assertj-core.version>
         <hcl4j.version>0.4.1-SNAPSHOT</hcl4j.version>
-        <jqa.version>1.10.1</jqa.version>
+        <!-- tag::jqa-version[] -->
+        <jqa.version>1.12.0-SNAPSHOT</jqa.version>
+        <!-- end::jqa-version[] -->
         <junit-jupiter-engine.version>5.8.1</junit-jupiter-engine.version>
         <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
         <maven-surefire-plugin.version>3.0.0-M5</maven-surefire-plugin.version>
@@ -74,11 +80,13 @@
             <id>oss.sonatype.org</id>
             <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
         </repository>
+        <!-- tag::sonatype-snapshot-repo[] -->
         <snapshotRepository>
             <id>ossrh</id>
             <url>${oss.sonatype.org.url}/content/repositories/snapshots/</url>
             <layout>default</layout>
         </snapshotRepository>
+        <!-- end::sonatype-snapshot-repo[] -->
     </distributionManagement>
 
     <build>

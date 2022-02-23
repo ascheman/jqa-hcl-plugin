@@ -1,0 +1,92 @@
+= jQAssistant HCL Plugin
+:author: Gerd Aschemann
+:email: gerd@aschemann.net
+
+:toc: left
+:icons: font
+
+Plugin for https://jqassistant.org[jQAssistant] (jQA), a tool suite to analyze arbitrary software structures (Java and other source code, dependencies, Git repositories, and many more).
+Enables to scan https://github.com/hashicorp/hcl[HCL] repositories for further analysis and reporting, in particular https://www.hashicorp.com/products/terraform[Terraform]
+
+[NOTE]
+Terraform is based on the _Hashicorp Configuration Language (HCL)_, version 2, besides other tools like https://www.packer.io/[Hashicorp Packer].
+Currently we concentrate on this scanner to import Terraform projects into jQA but scanning other HCL based resources should be possible as well.
+
+
+Based on
+
+* the great https://101.jqassistant.org/implementation-of-a-scanner-plugin/[101 Tutorial to write a jQAssistant Plugins],
+* the nice https://github.com/bertramdev/hcl4j[HCL 4 Java] package (or currently my https://github.com/ascheman/hcl4j/[fork] of it).
+
+[CAUTION]
+.Please note the 0.x version numbering and SNAPSHOTs
+====
+The plugin is currently only a starting point to scan HCL/Terraform repositories for jQA.
+
+Please note, that the plugin versioning follows https://semver.org[Semantic Versioning] _but starts with a 0_.
+Hence, the API and features are not yet stable and may change with every minor version upgrade without prior notice.
+In particular, SNAPSHOT versions can be very unstable due to the very nature of branch based uploads to Maven repositories.
+====
+
+== Getting started
+
+=== Install / Build
+
+==== Use from Maven OSS repository
+
+First versions are available via
+
+[source, xml]
+include::pom.xml[tags=sonatype-url]
+
+as SNAPSHOT
+
+[source, xml]
+include::pom.xml[tags=sonatype-snapshot-repo]
+
+==== Local Build
+
+Additionally it is possible to build it locally:
+
+* Optionally clone and build https://github.com/ascheman/ansible-inventory-java/[Ansible Inventory Java] as pre-requisite:
+** `git clone https://github.com/ascheman/hcl4j`
+** `(cd hcl4j && ./gradlew clean publishToMavenLocal)`.footnote:[Make sure you use the `develop` branch of my hcl4j fork. This is the default branch.]
+* Clone and build the plugin itself
+** `git clone https://github.com/ascheman/jqa-hcl-plugin`
+** `(cd jqa-hcl-plugin && ./mvnw clean install)`
+
+=== Usage
+
+Use in your Terraform/HCL Maven project as any other jQA plugin, e.g.,
+
+[source, xml]
+.pom.xml (part)
+----
+...
+        <properties>
+include::pom.xml[tags=jqa-version, indent=12]
+        </properties>
+...
+        <plugins>
+            <plugin>
+                <groupId>com.buschmais.jqassistant</groupId>
+                <artifactId>jqassistant-maven-plugin</artifactId>
+                <version>${jqa.version}</version>
+...
+                <dependencies>
+...
+                    <dependency>
+                        <groupId>net.aschemann.jqassistant.plugins</groupId>
+                        <artifactId>jqa-hcl-plugin</artifactId>
+include::pom.xml[tags=version, indent=24]
+                    </dependency>
+                </dependencies>
+            </plugin>
+...
+----
+
+It will detect your HCL/Terraform files and add them to Neo4j database.
+
+== Examples
+
+Find a full example at https://github.com/ascheman/jqa-hcl-demo-0/
