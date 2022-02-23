@@ -47,6 +47,17 @@
         <slf4j-simple.version>1.7.29</slf4j-simple.version>
     </properties>
 
+    <pluginRepositories>
+        <pluginRepository>
+            <id>ossrh</id>
+            <url>${oss.sonatype.org.url}/content/repositories/snapshots/</url>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+            </snapshots>
+        </pluginRepository>
+    </pluginRepositories>
+
     <repositories>
         <repository>
             <id>ossrh</id>
@@ -93,7 +104,7 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.bertramlabs.plugins</groupId>
+            <groupId>net.aschemann.iac</groupId>
             <artifactId>hcl4j</artifactId>
             <version>${hcl4j.version}</version>
         </dependency>
