@@ -41,16 +41,16 @@
         <oss.sonatype.org.url>https://oss.sonatype.org</oss.sonatype.org.url>
         <!-- end::sonatype-url[] -->
 
-        <assertj-core.version>3.21.0</assertj-core.version>
+        <assertj-core.version>3.22.0</assertj-core.version>
         <hcl4j.version>0.4.1-SNAPSHOT</hcl4j.version>
         <!-- tag::jqa-version[] -->
         <jqa.version>1.11.1</jqa.version>
         <!-- end::jqa-version[] -->
-        <junit-jupiter-engine.version>5.8.1</junit-jupiter-engine.version>
+        <junit-jupiter-engine.version>5.8.2</junit-jupiter-engine.version>
         <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
         <maven-surefire-plugin.version>3.0.0-M5</maven-surefire-plugin.version>
-        <slf4j.version>1.7.30</slf4j.version>
-        <slf4j-simple.version>1.7.29</slf4j-simple.version>
+        <slf4j.version>1.7.36</slf4j.version>
+        <slf4j-simple.version>1.7.36</slf4j-simple.version>
     </properties>
 
     <pluginRepositories>
