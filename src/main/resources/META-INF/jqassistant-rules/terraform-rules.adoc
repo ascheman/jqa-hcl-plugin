@@ -42,13 +42,38 @@ SET t:Variable
 RETURN file
 ----
 
+[[terraform:ResourceTypes]]
+.Define the types for all Terraform Resources
+[source,cypher,role=concept,requiresConcepts=terraform:Hcl2Terraform]
+----
+MATCH (t:Terraform)-[:HAS_BLOCK]->(r:Terraform:Resource)
+SET r.type = t.name
+WITH DISTINCT t.name as type_name
+CREATE (c:Terraform:ResourceType {name: type_name})
+WITH c
+MATCH (r:Terraform:Resource{type:c.name})
+MERGE (c)-[:HAS_OBJECT]->(r)
+RETURN *
+----
+
+[[terraform:ResourceUsageRelations]]
+.Create "USES" relations between Terraform Resources
+[source,cypher,role=concept,requiresConcepts=terraform:ResourceTypes]
+----
+MATCH (src:Terraform:Resource)-[*]->()-[:REFERS_TO]->
+  (n:Terraform)
+  <-[*]-(tgt:Terraform:Resource)
+MERGE (src)-[:USES]->(tgt)
+RETURN *
+----
+
 //[[my-rules:MyConstraint]]
 //.A human readable description of the constraint.
 //[source,cypher,role=constraint,requiresConcepts="my-rules:MyConcept",severity=blocker]
 //----
-////MATCH //// ...
-////WHERE //// ...
-////RETURN //// ...
+// //MATCH //// ...
+// //WHERE //// ...
+// //RETURN //// ...
 //----
 
 [[terraform:TerraformDefaultGroup]]
