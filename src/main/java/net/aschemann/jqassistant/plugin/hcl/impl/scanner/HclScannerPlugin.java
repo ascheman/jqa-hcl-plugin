@@ -49,6 +49,13 @@ public class HclScannerPlugin extends AbstractDirectoryScannerPlugin<HclConfigur
     private String currentFilename;
 
     @Override
+    public boolean accepts(File item, String path, Scope scope) throws IOException {
+        boolean accepts = super.accepts(item, path, scope);
+        LOGGER.debug("Test for acceptance of file '{}' @ '{}': {}", item, path, scope);
+        return accepts;
+    }
+
+    @Override
     protected Scope getRequiredScope() {
         return HCL;
     }
