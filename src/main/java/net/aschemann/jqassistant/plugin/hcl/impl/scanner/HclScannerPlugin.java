@@ -101,7 +101,7 @@ public class HclScannerPlugin extends AbstractDirectoryScannerPlugin<HclConfigur
 
     @Override
     protected void leaveContainer(File container, HclConfigurationDescriptor containerDescriptor,
-                                  ScannerContext scannerContext) throws IOException {
+                                  ScannerContext scannerContext) {
         LOGGER.debug("Leaving Directory '{}'", container.getPath());
     }
 
@@ -141,9 +141,7 @@ public class HclScannerPlugin extends AbstractDirectoryScannerPlugin<HclConfigur
                                     + "elements (name: '%s', type: '%s')", name,
                             hclObjectStore.delegate.get().getId(), hclObjectStore.delegate.getClass()));
                 }
-                hclObjectStore.contained.forEach((final String key, final HclObjectStore value) -> {
-                    contained.get(name).add(key, value);
-                });
+                hclObjectStore.contained.forEach((final String key, final HclObjectStore value) -> contained.get(name).add(key, value));
             } else {
                 LOGGER.debug("'{} ({})': add in '{} ({})'", hclObjectStore.fullyQualifiedName(), hashCode(), name,
                         hclObjectStore.hashCode());
@@ -200,8 +198,7 @@ public class HclScannerPlugin extends AbstractDirectoryScannerPlugin<HclConfigur
                 if (qualifiedNameElems.size() == 1) {
                     LOGGER.debug("'{}': add implicit '{}' ({})", fullyQualifiedName(),
                             currentQualifiedName, hashCode());
-                    HclObjectStore result = this.add(new HCLAttribute(currentQualifiedName, -1, -1, -1));
-                    return result;
+                    return this.add(new HCLAttribute(currentQualifiedName, -1, -1, -1));
                 }
                 LOGGER.debug("'{}': add fake '{}' ({})", fullyQualifiedName(), currentQualifiedName, hashCode());
                 HclObjectStore fake = new HclObjectStore(this, currentQualifiedName);
@@ -240,9 +237,7 @@ public class HclScannerPlugin extends AbstractDirectoryScannerPlugin<HclConfigur
                 } else if ("variable".equals(hclBlock.getName())) {
                     objects.add("var", hclObjectStore);
                 } else {
-                    hclObjectStore.contained.forEach((final String name, final HclObjectStore objectStore) -> {
-                        objects.add(name, objectStore);
-                    });
+                    hclObjectStore.contained.forEach((final String name, final HclObjectStore objectStore) -> objects.add(name, objectStore));
                 }
             }
         }
