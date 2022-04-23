@@ -44,7 +44,7 @@
         <assertj-core.version>3.21.0</assertj-core.version>
         <hcl4j.version>0.4.1-SNAPSHOT</hcl4j.version>
         <!-- tag::jqa-version[] -->
-        <jqa.version>1.12.0-SNAPSHOT</jqa.version>
+        <jqa.version>1.11.0</jqa.version>
         <!-- end::jqa-version[] -->
         <junit-jupiter-engine.version>5.8.1</junit-jupiter-engine.version>
         <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
