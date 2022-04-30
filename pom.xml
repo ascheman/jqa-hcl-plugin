@@ -42,7 +42,7 @@
         <!-- end::sonatype-url[] -->
 
         <assertj-core.version>3.22.0</assertj-core.version>
-        <hcl4j.version>0.5.0-SNAPSHOT</hcl4j.version>
+        <hcl4j.version>0.5.1-SNAPSHOT</hcl4j.version>
         <!-- tag::jqa-version[] -->
         <jqa.version>1.11.1</jqa.version>
         <!-- end::jqa-version[] -->
