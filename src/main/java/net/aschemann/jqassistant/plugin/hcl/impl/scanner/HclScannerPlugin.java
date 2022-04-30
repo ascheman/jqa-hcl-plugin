@@ -198,7 +198,7 @@ public class HclScannerPlugin extends AbstractDirectoryScannerPlugin<HclConfigur
                 if (qualifiedNameElems.size() == 1) {
                     LOGGER.debug("'{}': add implicit '{}' ({})", fullyQualifiedName(),
                             currentQualifiedName, hashCode());
-                    return this.add(new HCLAttribute(currentQualifiedName, -1, -1, -1));
+                    return this.add(new HCLAttribute(currentQualifiedName, -1, -1, -1L));
                 }
                 LOGGER.debug("'{}': add fake '{}' ({})", fullyQualifiedName(), currentQualifiedName, hashCode());
                 HclObjectStore fake = new HclObjectStore(this, currentQualifiedName);

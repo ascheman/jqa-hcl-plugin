@@ -7,7 +7,7 @@
     <groupId>net.aschemann.jqassistant.plugins</groupId>
     <artifactId>jqa-hcl-plugin</artifactId>
     <!-- tag::version[] -->
-    <version>0.1.0-SNAPSHOT</version>
+    <version>0.1.1-SNAPSHOT</version>
     <!-- end::version[] -->
 
     <name>jQAssistant HCL Plugin</name>
@@ -42,7 +42,7 @@
         <!-- end::sonatype-url[] -->
 
         <assertj-core.version>3.22.0</assertj-core.version>
-        <hcl4j.version>0.4.1-SNAPSHOT</hcl4j.version>
+        <hcl4j.version>0.5.0-SNAPSHOT</hcl4j.version>
         <!-- tag::jqa-version[] -->
         <jqa.version>1.11.1</jqa.version>
         <!-- end::jqa-version[] -->

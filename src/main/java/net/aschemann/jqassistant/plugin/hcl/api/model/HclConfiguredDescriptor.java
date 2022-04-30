@@ -21,7 +21,7 @@ public interface HclConfiguredDescriptor extends HclDescriptor {
 
     void setColumn(final int column);
 
-    int getPosition();
+    long getPosition();
 
-    void setPosition(final int position);
+    void setPosition(final long position);
 }
