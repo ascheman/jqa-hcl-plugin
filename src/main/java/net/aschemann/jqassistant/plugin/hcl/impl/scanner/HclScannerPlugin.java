@@ -296,7 +296,7 @@ public class HclScannerPlugin extends AbstractDirectoryScannerPlugin<HclConfigur
 
             for (Symbol child : hclAttribute.getChildren()) {
                 if (child instanceof HCLValue) {
-                    result.setValue((String) ((HCLValue) child).value);
+                    result.setValue((String) ((HCLValue) child).getValue());
                 } else if (child instanceof HCLAttribute || child instanceof Variable) {
                     String childName = child.getName();
                     Optional<HclDescriptor> hclDescriptor = objects.find(childName).delegate;
