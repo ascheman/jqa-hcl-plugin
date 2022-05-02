@@ -21,7 +21,7 @@ class HclScannerPluginTest extends AbstractPluginIT {
     void scanSimpleTfLbConfiguration() throws IOException {
         File testFile = new File(getClassesDirectory(HclScannerPluginTest.class), SIMPLE_TF_LB_CONFIGURATION);
         HclConfigurationDescriptor hclConfigurationDescriptor = scan(testFile);
-        assertEquals(4, hclConfigurationDescriptor.getFiles().size());
+        assertEquals(5, hclConfigurationDescriptor.getFiles().size());
         // TODO add more tests on the graph
         store.rollbackTransaction();
     }
