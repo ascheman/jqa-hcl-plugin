@@ -10,7 +10,7 @@ public interface HclVariableDescriptor extends HclIdentifiedDescriptor {
     void setValue(final String value);
 
     @Relation("REFERS_TO")
-    HclAttributeDescriptor getReference();
+    HclIdentifiedDescriptor getReference();
 
-    void setReference(final HclAttributeDescriptor reference);
+    void setReference(final HclIdentifiedDescriptor reference);
 }

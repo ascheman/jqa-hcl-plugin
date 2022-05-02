@@ -301,10 +301,9 @@ public class HclScannerPlugin extends AbstractDirectoryScannerPlugin<HclConfigur
                     String childName = child.getName();
                     Optional<HclDescriptor> hclDescriptor = objects.find(childName).delegate;
                     if (hclDescriptor.isPresent()) {
-                        HclAttributeDescriptor targetAttribute = (HclAttributeDescriptor) hclDescriptor.get();
                         LOGGER.debug("'{} ({})': set reference for '{}' to '{}'", fullyQualifiedName(), hashCode(),
-                                childName, targetAttribute);
-                        result.setReference(targetAttribute);
+                                childName, hclDescriptor.get());
+                        result.setReference((HclIdentifiedDescriptor) hclDescriptor.get());
                     } else {
                         LOGGER.error("No Reference Attribute present for '{}'", child.getName());
                     }
