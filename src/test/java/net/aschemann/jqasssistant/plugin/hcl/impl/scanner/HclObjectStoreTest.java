@@ -15,10 +15,11 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Objects;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 class HclObjectStoreTest {
 
@@ -27,37 +28,46 @@ class HclObjectStoreTest {
     public static final String SIMPLE_HCL_TEST = "/hcl/simple";
     public static final String SIMPLE_TF_LB_CONFIGURATION = "/hcl/terraform/simple-lb";
 
-    private Store store = mock(Store.class);
+    private Store store;
+
+    <C extends Class> void createForever(final C clazz) {
+        doAnswer(invocation -> {
+            LOGGER.debug("Creating new '{}': '{}'", clazz,  invocation);
+            return mock(clazz);
+        }).when(store).create(clazz);
+    }
 
     @BeforeEach
     void prepare() {
-        Class hclFileDescriptorClazz = HclFileDescriptor.class;
-        when(store.create(hclFileDescriptorClazz)).thenReturn(mock(HclFileDescriptor.class));
-        Class hclBlockDescriptorClazz = HclBlockDescriptor.class;
-        doAnswer(invocation -> {
-            LOGGER.debug("Creating new '{}'", invocation);
-            return mock(HclBlockDescriptor.class);
-        }).when(store).create(hclBlockDescriptorClazz);
-        Class hclAttributeDescriptorClazz = HclAttributeDescriptor.class;
-        doAnswer(invocation -> {
-            LOGGER.debug("Creating new '{}'", invocation);
-            return mock(HclAttributeDescriptor.class);
-        }).when(store).create(hclAttributeDescriptorClazz);
+        store = mock(Store.class);
+        createForever(HclAttributeDescriptor.class);
+        createForever(HclFileDescriptor.class);
+        createForever(HclBlockDescriptor.class);
     }
 
     @Test
-    void scanSimpleTfLbConfiguration() throws IOException, ClassNotFoundException {
+    void scanSimpleTfConfiguration() throws IOException {
+        HclObjectStore root = getHclObjectStore(SIMPLE_HCL_TEST);
+        assertThat(root).isNotNull();
+    }
+
+    @Test
+    void scanSimpleTfLbConfiguration() throws IOException {
+        HclObjectStore root = getHclObjectStore(SIMPLE_TF_LB_CONFIGURATION);
+        assertThat(root).isNotNull();
+    }
+
+    private HclObjectStore getHclObjectStore(final String configDirectory) throws IOException {
         HclScannerContext ctx = new HclScannerContext(store, new HCLParser());
         HclObjectStore root = new HclObjectStore(ctx, null,"ROOT");
         ctx.setRoot(root);
         File resourceDir = new File("src/test/resources");
-        File configDir = new File (resourceDir, SIMPLE_TF_LB_CONFIGURATION);
-//        File main = new File(configDir, "main.tf");
+        File configDir = new File (resourceDir, configDirectory);
         HclConfigurationDescriptor hclConfigurationDescriptor = mock(HclConfigurationDescriptor.class);
-//        root.add(hclConfigurationDescriptor, main);
-        for (File file : configDir.listFiles(HclObjectStore.filterHclFiles())) {
+        for (File file : Objects.requireNonNull(configDir.listFiles(HclObjectStore.filterHclFiles()))) {
             root.add(hclConfigurationDescriptor, file);
         }
         LOGGER.info("Created: '{}'", root);
+        return root;
     }
 }
