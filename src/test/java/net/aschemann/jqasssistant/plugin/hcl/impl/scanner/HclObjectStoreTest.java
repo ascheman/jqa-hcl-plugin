@@ -31,8 +31,8 @@ class HclObjectStoreTest {
     private Store store;
 
     <C extends Class> void createForever(final C clazz) {
-        doAnswer(invocation -> {
-            LOGGER.debug("Creating new '{}': '{}'", clazz,  invocation);
+        doAnswer(invocationOnMock -> {
+            LOGGER.debug("Creating new '{}'", clazz);
             return mock(clazz);
         }).when(store).create(clazz);
     }
