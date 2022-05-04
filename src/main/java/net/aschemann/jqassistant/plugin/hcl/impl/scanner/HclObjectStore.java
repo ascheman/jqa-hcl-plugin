@@ -184,18 +184,18 @@ public class HclObjectStore {
 
     private void addChildren(HCLConfiguration hclConfiguration) {
         for (HCLAttribute hclAttribute : hclConfiguration.getAttributes()) {
-            add(hclAttribute);
+            ctx.getRoot().add(hclAttribute.getName(), add(hclAttribute)); // Why are we missing other and seven from
+            // the ROOT?
         }
         for (HCLBlock hclBlock : hclConfiguration.getBlocks()) {
             HclObjectStore hclObjectStore = add(hclBlock);
+            ctx.getRoot().add(hclBlock.blockNames.get(0), hclObjectStore);
             if ("data".equals(hclBlock.getName())) {
                 ctx.getRoot().add("data", hclObjectStore);
             } else if ("locals".equals(hclBlock.getName())) {
                 ctx.getRoot().add("local", hclObjectStore);
             } else if ("variable".equals(hclBlock.getName())) {
                 ctx.getRoot().add("var", hclObjectStore);
-            } else {
-                hclObjectStore.contained.forEach((final String name, final HclObjectStore objectStore) -> ctx.getRoot().add(name, objectStore));
             }
         }
     }
@@ -253,10 +253,12 @@ public class HclObjectStore {
         }
 
         for (Symbol child : hclAttribute.getChildren()) {
+            String childName = child.getName();
             if (child instanceof HCLValue) {
+                LOGGER.debug("'{} ({})': set value for '{}' to '{}'", fullyQualifiedName(), hashCode(), childName,
+                        ((HCLValue) child).getValue());
                 result.setValue((String) ((HCLValue) child).getValue());
             } else if (child instanceof HCLAttribute || child instanceof Variable) {
-                String childName = child.getName();
                 Optional<HclDescriptor> hclDescriptor = ctx.getRoot().find(childName).delegate;
                 if (hclDescriptor.isPresent()) {
                     LOGGER.debug("'{} ({})': set reference for '{}' to '{}'", fullyQualifiedName(), hashCode(),
