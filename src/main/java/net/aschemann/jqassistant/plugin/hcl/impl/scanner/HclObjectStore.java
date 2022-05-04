@@ -21,6 +21,7 @@ import javax.validation.constraints.NotNull;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -137,10 +138,27 @@ public class HclObjectStore {
             }
         }
     }
+    
+    private List<String> qualifiedNames(@NotNull final String qualifiedName) {
+        // TODO make sure we handle a prefix only in a Terraform context
+        String[] qualifiedNames = qualifiedName.split(CONTEXT_DELIMITER_RE);
+        if (qualifiedNames[0].equals("local")
+                || qualifiedNames[0].equals("data")
+                || qualifiedNames[0].equals("resource")
+                || qualifiedNames[0].equals("var")
+        ) {
+            // TODO handle function calls like "tolist"
+            return Arrays.asList(qualifiedNames);
+        }
+        List<String> result = new ArrayList<>(qualifiedNames.length + 1);
+        result.add("resource");
+        result.addAll(Arrays.asList(qualifiedNames));
+        return result;
+    }
 
-    HclObjectStore find(String qualifiedName) {
+    HclObjectStore find(@NotNull final String qualifiedName) {
         LOGGER.debug("'{}': Searching for '{}'", fullyQualifiedName(), qualifiedName);
-        List<String> qualifiedNameElems = Arrays.asList(qualifiedName.split(CONTEXT_DELIMITER_RE));
+        List<String> qualifiedNameElems = qualifiedNames(qualifiedName);
         return find(qualifiedNameElems);
     }
 
