@@ -70,8 +70,8 @@ RETURN *
 [source,cypher,role=concept,requiresConcepts=terraform:ResourceTypes]
 ----
 MATCH (src:Terraform:Resource)-[*]->()-[:REFERS_TO]->
-  (n:Terraform)
-  <-[*]-(tgt:Terraform:Resource)
+  (v:Terraform:Variable {identifier:"id"})
+  <-[:HAS_ATTRIBUTE]-(tgt:Terraform:Resource)
 MERGE (src)-[:USES]->(tgt)
 RETURN *
 ----
