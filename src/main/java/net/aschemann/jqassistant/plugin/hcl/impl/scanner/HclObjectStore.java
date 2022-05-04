@@ -163,7 +163,7 @@ public class HclObjectStore {
     }
 
     HclObjectStore find(final List<String> qualifiedNameElems) {
-        if (qualifiedNameElems.size() == 0) {
+        if (qualifiedNameElems.isEmpty()) {
             return this;
         }
         final String currentQualifiedName = qualifiedNameElems.get(0);
@@ -223,15 +223,15 @@ public class HclObjectStore {
     }
 
     HclObjectStore add(final List<String> blockNames, final HCLBlock hclBlock) {
-        String name = blockNames.get(0);
+        String mainBlockName = blockNames.get(0);
         if (1 == blockNames.size()) {
-            return add(name, hclBlock);
+            return add(mainBlockName, hclBlock);
         }
         HclBlockDescriptor result = ctx.getStore().create(HclBlockDescriptor.class);
-        result.setName(name);
+        result.setName(mainBlockName);
         ((HclBlockDescriptor) this.delegate.get()).getBlocks().add(result);
-        HclObjectStore resultStore = new HclObjectStore(this, name, Optional.of(result));
-        add(name, resultStore);
+        HclObjectStore resultStore = new HclObjectStore(this, mainBlockName, Optional.of(result));
+        add(mainBlockName, resultStore);
         resultStore.add(blockNames.subList(1, blockNames.size()), hclBlock);
         return resultStore;
     }
