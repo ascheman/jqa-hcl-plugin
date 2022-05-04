@@ -56,6 +56,15 @@ MERGE (c)-[:HAS_OBJECT]->(r)
 RETURN *
 ----
 
+[[terraform:File2Resource]]
+.Attach defined resources directly to the respective file
+[source,cypher,role=concept,requiresConcepts=terraform:Hcl2Terraform]
+----
+MATCH (f:Terraform:File)-[:HAS_BLOCK]->(:Terraform {name:"resource"})-[:HAS_BLOCK]->()-[:HAS_BLOCK]->(r:Terraform:Resource)
+MERGE (f)-[:DEFINES]->(r)
+RETURN *
+----
+
 [[terraform:ResourceUsageRelations]]
 .Create "USES" relations between Terraform Resources
 [source,cypher,role=concept,requiresConcepts=terraform:ResourceTypes]
