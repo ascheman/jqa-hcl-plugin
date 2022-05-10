@@ -60,6 +60,7 @@ class HclObjectStoreTest {
     void scanAwsEc2EbsDockerHost() throws IOException {
         HclObjectStore root = getHclObjectStore(TF_AWS_EC2_EBS_DOCKER_HOST);
         assertThat(root).isNotNull();
+        assertThat(root.contained.get("resource").contained.get("aws_security_group").contained.get("this").contained.get("id")).isNotNull();
     }
 
     private HclObjectStore getHclObjectStore(final String configDirectory) throws IOException {

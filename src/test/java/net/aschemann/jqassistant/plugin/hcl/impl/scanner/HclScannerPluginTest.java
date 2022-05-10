@@ -3,6 +3,7 @@ package net.aschemann.jqassistant.plugin.hcl.impl.scanner;
 import com.buschmais.jqassistant.core.store.api.model.Descriptor;
 import com.buschmais.jqassistant.plugin.common.test.AbstractPluginIT;
 import net.aschemann.jqassistant.plugin.hcl.api.model.HclConfigurationDescriptor;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -35,8 +36,17 @@ class HclScannerPluginTest extends AbstractPluginIT {
 
     @Test
     void scanAwsEc2EbsDockerHost() throws IOException {
-        HclConfigurationDescriptor root = scan(TF_AWS_EC2_EBS_DOCKER_HOST);
-        assertThat(root).isNotNull();
+        HclConfigurationDescriptor hclConfigurationDescriptor = scan(TF_AWS_EC2_EBS_DOCKER_HOST);
+        assertThat(hclConfigurationDescriptor).isNotNull();
+        String query = "MATCH (security_group {name:'aws_security_group'}) "
+                + "--> (this {name:'this'}) "
+                // This works
+                + "--> (id {identifier:'vpc_id'})"
+                // This should alternatively work as well, but doesn't!
+//                + "--> (id {identifier:'id'})"
+                + " RETURN *";
+        TestResult testResult = query(query);
+        Assertions.assertThat(testResult.getColumns()).containsKeys("id");
     }
 
 
