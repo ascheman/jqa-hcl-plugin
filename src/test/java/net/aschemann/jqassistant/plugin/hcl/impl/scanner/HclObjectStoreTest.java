@@ -1,4 +1,4 @@
-package net.aschemann.jqasssistant.plugin.hcl.impl.scanner;
+package net.aschemann.jqassistant.plugin.hcl.impl.scanner;
 
 import com.bertramlabs.plugins.hcl4j.HCLParser;
 import com.buschmais.jqassistant.core.store.api.Store;
@@ -6,8 +6,6 @@ import net.aschemann.jqassistant.plugin.hcl.api.model.HclAttributeDescriptor;
 import net.aschemann.jqassistant.plugin.hcl.api.model.HclBlockDescriptor;
 import net.aschemann.jqassistant.plugin.hcl.api.model.HclConfigurationDescriptor;
 import net.aschemann.jqassistant.plugin.hcl.api.model.HclFileDescriptor;
-import net.aschemann.jqassistant.plugin.hcl.impl.scanner.HclObjectStore;
-import net.aschemann.jqassistant.plugin.hcl.impl.scanner.HclScannerContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;

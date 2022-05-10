@@ -1,4 +1,4 @@
-package net.aschemann.jqasssistant.plugin.hcl.impl.scanner;
+package net.aschemann.jqassistant.plugin.hcl.impl.scanner;
 
 import com.buschmais.jqassistant.core.store.api.model.Descriptor;
 import com.buschmais.jqassistant.plugin.common.test.AbstractPluginIT;
