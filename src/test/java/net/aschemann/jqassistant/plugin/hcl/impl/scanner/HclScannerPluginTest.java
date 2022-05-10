@@ -47,6 +47,13 @@ class HclScannerPluginTest extends AbstractPluginIT {
                 + " RETURN *";
         TestResult testResult = query(query);
         Assertions.assertThat(testResult.getColumns()).containsKeys("id");
+
+        query = "MATCH (subnet {name:'aws_subnet'}) "
+                + "--> (this {name:'this'}) "
+                + "--> (id {identifier:'id'})"
+                + " RETURN *";
+        testResult = query(query);
+        Assertions.assertThat(testResult.getColumns()).containsKeys("id");
     }
 
 
