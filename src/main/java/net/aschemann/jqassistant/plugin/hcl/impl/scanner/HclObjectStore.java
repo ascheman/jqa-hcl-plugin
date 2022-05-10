@@ -33,11 +33,11 @@ public class HclObjectStore {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(HclObjectStore.class);
 
-    private final Map<String, HclObjectStore> contained = new HashMap<>();
-    private final HclScannerContext ctx;
-    private final String name;
-    private HclObjectStore parent = null;
-    private Optional<HclDescriptor> delegate;
+    final Map<String, HclObjectStore> contained = new HashMap<>();
+    final HclScannerContext ctx;
+    final String name;
+    HclObjectStore parent = null;
+    Optional<HclDescriptor> delegate;
 
     public static FileFilter filterHclFiles() {
         return file -> {
