@@ -27,6 +27,7 @@ class HclObjectStoreTest {
 
     public static final String SIMPLE_HCL_TEST = "/hcl/simple";
     public static final String SIMPLE_TF_LB_CONFIGURATION = "/hcl/terraform/simple-lb";
+    public static final String TF_AWS_EC2_EBS_DOCKER_HOST = "/hcl/aws_ec2_ebs_docker_host";
 
     private Store store;
 
@@ -54,6 +55,12 @@ class HclObjectStoreTest {
     @Test
     void scanSimpleTfLbConfiguration() throws IOException {
         HclObjectStore root = getHclObjectStore(SIMPLE_TF_LB_CONFIGURATION);
+        assertThat(root).isNotNull();
+    }
+
+    @Test
+    void scanAwsEc2EbsDockerHost() throws IOException {
+        HclObjectStore root = getHclObjectStore(TF_AWS_EC2_EBS_DOCKER_HOST);
         assertThat(root).isNotNull();
     }
 
